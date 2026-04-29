@@ -1,1 +1,1 @@
-# strava_agent
+# Personal Strava AI Agent
