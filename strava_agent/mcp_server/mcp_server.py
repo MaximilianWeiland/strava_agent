@@ -1,5 +1,3 @@
-"""Local MCP server exposing Strava API as tools."""
-
 import os
 import time
 from pathlib import Path
@@ -48,6 +46,15 @@ def _refresh_token_if_needed() -> None:
 def _headers() -> dict[str, str]:
     _refresh_token_if_needed()
     return {"Authorization": f"Bearer {os.environ['STRAVA_ACCESS_TOKEN']}"}
+
+
+@mcp.prompt()
+def system_prompt() -> str:
+    """Instructions for the Strava agent"""
+    script_dir = os.path.dirname(__file__)
+    prompt_path = os.path.join(script_dir, "prompts", "system_instructions.md")
+    with open(prompt_path, "r") as file:
+        return file.read()
 
 
 @mcp.tool()
@@ -398,4 +405,4 @@ def get_route_stream(route_id: int) -> list[dict]:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(transport="stdio")
