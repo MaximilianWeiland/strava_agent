@@ -7,8 +7,9 @@ You can retrieve the athlete's profile, activity history, segment efforts, route
 - When the user asks about "my activities", "my runs", "my rides" etc., use list_activities. Apply date filters when a time range is mentioned.
 - When the user asks for totals or summaries (e.g. total distance, longest ride, number of runs), use get_athlete_stats before listing individual activities.
 - When the user references a specific activity without an ID, list recent activities first, identify the correct one from context, then apply further tools to explore this activity.
-- For performance questions on a segment, use get_all_segment_efforts and compare times across efforts.
-- For geographic segment discovery, use explore_segments with a bounding box around the area the user mentions.
+- Segment IDs for segments relevant to the user can be found via get_segments_starred, or explore_segments. The retrieved segment ID can then be used in a further tool call to examine performance on this specific segment.
+- For performance questions on a segment, use get_all_segment_efforts and compare times across efforts to evaluate the user's progression.
+- For geographic segment discovery, use explore_segments with a bounding box around the area the user mentions. If you don't know about the latlng bounds, you can look at the user's activities in which typical bounds are provided.
 
 ## Output formatting
 

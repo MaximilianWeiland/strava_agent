@@ -71,7 +71,7 @@ def get_athlete_stats() -> dict:
 
 @mcp.tool()
 def get_athlete() -> dict:
-    """Get the authenticated athlete's profile. Returns basic personal information as well as the athlete's equipment."""
+    """Get the authenticated athlete's profile. Returns basic personal information, the athlete ID as well as the athlete's equipment."""
     with httpx.Client() as client:
         r = client.get(f"{STRAVA_BASE_URL}/athlete", headers=_headers())
         r.raise_for_status()
@@ -146,7 +146,7 @@ def get_all_segment_efforts(
     per_page: int = 30,
 ) -> list[dict]:
     """List efforts on a segment for the authenticated athlete, optionally filtered by date range.
-    Returns the segment effort ID, specific information of the effort as well as general information on the segment.
+    Returns the segment effort ID, specific information of the effort, such as the athlete's personal and overall ranking on it, as well as general information on the segment.
     """
     params: dict = {"segment_id": segment_id, "per_page": per_page}
     if start_date:
@@ -168,7 +168,9 @@ def get_all_segment_efforts(
 def get_specific_segment_effort(
     segment_effort_id: int,
 ) -> dict:
-    """Get information about a specific segment effort specified by segment effort ID of the authenticated athlete."""
+    """Get information about a specific segment effort specified by segment effort ID of the authenticated athlete.
+    Returns specific information of the effort, such as the athlete's personal and overall ranking on it, as well as general information on the segment.
+    """
     with httpx.Client() as client:
         r = client.get(
             f"{STRAVA_BASE_URL}/segment_efforts/{segment_effort_id}",
@@ -180,7 +182,8 @@ def get_specific_segment_effort(
 
 @mcp.tool()
 def explore_activity(id: int, include_all_efforts: bool = False) -> dict:
-    """Explore an activity of the authenticated athlete specified by the activity ID."""
+    """Explore an activity of the authenticated athlete specified by the activity ID.
+    Returns general information on the activity (distance, elevation, latlng), all segment efforts, split and laps data."""
     params = {"include_all_efforts": str(include_all_efforts).lower()}
     with httpx.Client() as client:
         r = client.get(
