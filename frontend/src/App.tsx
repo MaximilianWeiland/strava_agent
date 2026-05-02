@@ -10,22 +10,14 @@ interface Message {
   toolCalls: string[]  // names of Strava tools the agent called while generating this message
 }
 
-// returns a stable session ID for this browser — creates one on first visit and persists it
-function getSessionId(): string {
-  let id = localStorage.getItem('session_id')
-  if (!id) {
-    id = crypto.randomUUID()
-    localStorage.setItem('session_id', id)
-  }
-  return id
-}
+// new session ID on every page load — each visit starts a fresh conversation
+const sessionId = crypto.randomUUID()
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([])  // full conversation shown in the UI
   const [input, setInput] = useState('')                    // current value of the text input
   const [loading, setLoading] = useState(false)             // true while waiting for a response
   const bottomRef = useRef<HTMLDivElement>(null)            // invisible div at the bottom of the message list
-  const sessionId = getSessionId()
 
   // scroll to the bottom whenever messages change (new message or streaming content added)
   useEffect(() => {

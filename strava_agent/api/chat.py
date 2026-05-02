@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from agents import Agent, Runner
 from agents.mcp import MCPServer
 from openai.types.responses import ResponseTextDeltaEvent
+from langfuse import propagate_attributes
 
 from strava_agent.api.db import get_input_items, save_input_items
 
@@ -38,23 +39,25 @@ async def chat(req: ChatRequest) -> StreamingResponse:
     input_items = await get_input_items(req.session_id)
 
     async def stream():
-        # append the latest user message to the conversation history
-        result = Runner.run_streamed(
-            _agent,
-            input=input_items + [{"role": "user", "content": req.message}],
-        )
-        # run the agent loop and yield SSE events as they come in
-        async for event in result.stream_events():
-            # send the (final) raw response to the frontend
-            if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
-                yield f"data: {json.dumps({'type': 'text', 'delta': event.data.delta})}\n\n"
-            # send the selected tool-name to the frontend
-            elif event.type == "run_item_stream_event":
-                if event.item.type == "tool_call_item":
-                    yield f"data: {json.dumps({'type': 'tool_call', 'name': event.item.raw_item.name})}\n\n"
-        # save conversation history to the db and yield done message to frontend
-        await save_input_items(req.session_id, result.to_input_list())
-        yield f"data: {json.dumps({'type': 'done'})}\n\n"
+        # attach session_id to the Langfuse trace so runs are grouped by conversation
+        with propagate_attributes(session_id=req.session_id):
+            # append the latest user message to the conversation history
+            result = Runner.run_streamed(
+                _agent,
+                input=input_items + [{"role": "user", "content": req.message}],
+            )
+            # run the agent loop and yield SSE events as they come in
+            async for event in result.stream_events():
+                # send the (final) raw response to the frontend
+                if event.type == "raw_response_event" and isinstance(event.data, ResponseTextDeltaEvent):
+                    yield f"data: {json.dumps({'type': 'text', 'delta': event.data.delta})}\n\n"
+                # send the selected tool-name to the frontend
+                elif event.type == "run_item_stream_event":
+                    if event.item.type == "tool_call_item":
+                        yield f"data: {json.dumps({'type': 'tool_call', 'name': event.item.raw_item.name})}\n\n"
+            # save conversation history to the db and yield done message to frontend
+            await save_input_items(req.session_id, result.to_input_list())
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
     # stream response to the frontend instead of waiting for the final message
     return StreamingResponse(stream(), media_type="text/event-stream")

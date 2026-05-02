@@ -5,11 +5,18 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from agents.mcp import MCPServerStdio
+from openinference.instrumentation.openai_agents import OpenAIAgentsInstrumentor
+from langfuse import get_client
 
 from strava_agent.api.chat import router, init_agent
 from strava_agent.api.db import init_db, close_db
 
 load_dotenv()
+
+# initialize Langfuse as the OTEL exporter before instrumenting
+get_client()
+# instrument the OpenAI Agents SDK — all Runner.run* calls are automatically traced to Langfuse
+OpenAIAgentsInstrumentor().instrument()
 
 
 # decorator turns the app into an asynchronous context manager

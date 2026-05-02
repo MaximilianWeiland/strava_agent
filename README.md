@@ -4,7 +4,7 @@ A personal AI assistant that lets you have conversations with your Strava data. 
 
 ## How it works
 
-The agent uses an MCP server to expose Strava API endpoints as tools. When you ask a question, the AI decides which tools to call, fetches the relevant data, and synthesizes a response. Conversation history is persisted in a Postgres database.
+The agent uses an MCP server to expose Strava API endpoints as tools. When you ask a question, the AI decides which tools to call, fetches the relevant data, and synthesizes a response. Conversation history is persisted in a Postgres database. All conversations are traced via Langfuse.
 
 To get an overview about all available tools (the Strava API endpoints) have a look at Strava's [Swagger Playground](https://developers.strava.com/playground/#/Activities/getLoggedInAthleteActivities).
 
@@ -22,6 +22,7 @@ To get an overview about all available tools (the Strava API endpoints) have a l
 - Docker (for Postgres)
 - A Strava API application ([create one here](https://www.strava.com/settings/api)). You need a Strava access and refresh token which grants you access to retrieve data from your account.
 - An OpenAI API key
+- A Langfuse API key
 
 ## Setup
 
@@ -44,6 +45,9 @@ STRAVA_ACCESS_TOKEN=...
 STRAVA_REFRESH_TOKEN=...
 STRAVA_TOKEN_EXPIRES_AT=...
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/strava_agent
+LANGFUSE_SECRET_KEY=...
+LANGFUSE_PUBLIC_KEY=...
+LANGFUSE_BASE_URL="https://cloud.langfuse.com"
 ```
 
 **3. Start Postgres**
