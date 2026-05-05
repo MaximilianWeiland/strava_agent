@@ -1,4 +1,4 @@
-# Personal Strava AI Agent
+# Personal Strava Agent
 
 A personal AI assistant that lets you have conversations with your Strava data. Ask questions about your recent activities, your training progression, specfic segments or your planned routes.
 
@@ -28,7 +28,7 @@ To get an overview about all available tools (the Strava API endpoints) have a l
 
 **1. Clone and install dependencies**
 ```bash
-git clone <repo-url>
+git clone https://github.com/MaximilianWeiland/strava_agent.git
 cd strava_agent
 uv sync
 cd frontend && npm install
