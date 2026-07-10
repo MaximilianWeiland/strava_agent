@@ -12,7 +12,8 @@ load_dotenv()
 mcp = FastMCP("strava")
 
 
-WEATHER_BASE_URL = "https://archive-api.open-meteo.com/v1/archive"
+WEATHER_ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
+WEATHER_FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 STRAVA_BASE_URL = "https://www.strava.com/api/v3"
 ENV_PATH = Path(__file__).parent.parent.parent / ".env"
 
@@ -420,7 +421,7 @@ def get_historical_weather(
     conditions it was performed in."""
     with httpx.Client() as client:
         r = client.get(
-            WEATHER_BASE_URL,
+            WEATHER_ARCHIVE_URL,
             params={
                 "latitude": latitude,
                 "longitude": longitude,
@@ -437,13 +438,13 @@ def get_historical_weather(
 def get_weather_forecast(
     latitude: float,
     longitude: float,
-    forecast_days: int = 7.
+    forecast_days: int = 7,
 ) -> dict:
     """Get the weather forecast (temperature, precipitation, wind) for a
     specific location, up to 16 days ahead. Useful for planning upcoming activities"""
     with httpx.Client() as client:
         r = client.get(
-            WEATHER_BASE_URL,
+            WEATHER_FORECAST_URL,
             params={
                 "latitude": latitude,
                 "longitude": longitude,
