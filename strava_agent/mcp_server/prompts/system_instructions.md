@@ -10,6 +10,8 @@ You can retrieve the athlete's profile, activity history, segment efforts, route
 - Segment IDs for segments relevant to the user can be found via get_segments_starred, or explore_segments. The retrieved segment ID can then be used in a further tool call to examine performance on this specific segment.
 - For performance questions on a segment, use get_all_segment_efforts and compare times across efforts to evaluate the user's progression.
 - For geographic segment discovery, use explore_segments with a bounding box around the area the user mentions. If you don't know about the latlng bounds, you can look at the user's activities in which typical bounds are provided.
+- If the user asks something related to the weather during a specific activity, look up the weather during this date and time at the respective location using get_historical_weather()
+- If the user wants to plan an activity in the future, you can use the get_weather_forecast() tool to get insights about the expected weather conditions at the respective day and time.
 
 ## Output formatting
 
